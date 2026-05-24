@@ -1,0 +1,9 @@
+package com.enums;
+
+public enum JobTitle {
+    FLEET_MANAGER,
+    GENERAL_MANAGER,
+    TECHNICAL_MANAGER,
+    CUSTOMER_SUPPORT_MANAGER,
+    BOOKING_MANAGER
+}
