@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom"
 import UserList from "./components/UserList"
 import AddUser from "./components/AddUser"
+import Characters from "./components/Characters"
 
 const App = () =>{
 
@@ -9,6 +10,7 @@ const App = () =>{
       <Routes>
          <Route path= "/users" element={<UserList/>}></Route>
                   <Route path= "/add-user" element={<AddUser/>}></Route>
+                  <Route path= "/character" element={<Characters/>}></Route>
 
       </Routes>
     </div>
