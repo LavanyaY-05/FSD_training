@@ -18,14 +18,7 @@ const Characters = () =>{
 }, [characters])
 
 
-useEffect(()=>{
-        const get = async (page) =>{
-            dispatch(getByPage(page))
-            setCharacterArray(characters)
 
-        }
-        get(page)
-    },[page])
 
 
 
