@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoadReady - Premium Car Rental</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-orange: #FF8400;
+            --dark-navy: #1A1A2E;
+            --success-green: #10B981;
+            --warning-amber: #F59E0B;
+            --danger-red: #EF4444;
+            --bg-grey: #F3F4F6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-grey);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Navbar & Global Overrides */
+        .bg-dark-navy { background-color: var(--dark-navy) !important; }
+        .text-orange { color: var(--primary-orange) !important; }
+        .btn-orange {
+            background-color: var(--primary-orange);
+            color: white;
+            border: none;
+        }
+        .btn-orange:hover {
+            background-color: #e07500;
+            color: white;
+        }
+        .btn-outline-orange {
+            border: 2px solid var(--primary-orange);
+            color: var(--primary-orange);
+            background: transparent;
+        }
+        .btn-outline-orange:hover {
+            background-color: var(--primary-orange);
+            color: white;
+        }
+
+        .app-page { display: none; min-height: calc(100vh - 160px); }
+        .app-page.active { display: block; }
+
+        /* Hero styling */
+        .hero-section {
+            background: linear-gradient(rgba(26, 26, 46, 0.75), rgba(26, 26, 46, 0.85)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200') no-repeat center center/cover;
+            padding: 120px 0;
+            color: white;
+        }
+
+        /* Hover lift cards */
+        .hover-lift {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+
+        /* Ratings Badge */
+        .rating-badge {
+            background-color: var(--success-green);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Split Screen layouts */
+        .split-left {
+            background: linear-gradient(135deg, var(--dark-navy), var(--primary-orange));
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+        }
+
+        /* Success Pulse */
+        .pulse-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Confetti Animation Elements */
+        .confetti-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-orange);
+            opacity: 0.8;
+            top: -10px;
+            animation: fall 3s linear infinite;
+        }
+        @keyframes fall {
+            0% { top: -10px; transform: translateX(0) rotate(0deg); }
+            100% { top: 100%; transform: translateX(100px) rotate(360deg); }
+        }
+
+        /* Profile Sidebar Navigation */
+        .profile-nav .nav-link {
+            color: #4b5563;
+            border-left: 4px solid transparent;
+            font-weight: 500;
+        }
+        .profile-nav .nav-link.active {
+            color: var(--primary-orange);
+            background-color: #fff3e6;
+            border-left-color: var(--primary-orange);
+        }
+
+        .strength-bar {
+            height: 6px;
+            transition: all 0.3s ease;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark-navy sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-extrabold fs-3 d-flex align-items-center" href="#" onclick="showPage('home-page')">
+                <i class="fa-solid fa-car-side text-orange me-2"></i>Road<span class="text-orange">Ready</span>
+            </a>
+            <button class="navbar-toggler" type="text/button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link fs-6 px-3 text-white" href="#" onclick="showPage('home-page')">Home</a></li>
+                    <li class="nav-item"><a class="nav-link fs-6 px-3 text-white" href="#" onclick="showPage('browse-page')">Browse Cars</a></li>
+                </ul>
+                <div class="d-flex align-items-center" id="nav-auth-area">
+                    <button class="btn btn-outline-orange px-4 rounded-pill" onclick="showPage('login-page')">Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        
+        <section id="home-page" class="app-page active">
+            <div class="hero-section text-center">
+                <div class="container">
+                    <h1 class="display-3 fw-extrabold mb-3">Find Your Perfect Ride</h1>
+                    <p class="lead mb-5 text-light">Premium self-drive vehicle rentals with zero hidden charges. Unbeatable rates guaranteed.</p>
+                    
+                    <div class="card p-4 shadow-lg border-0 bg-white text-dark mx-auto" style="max-width: 950px; border-radius: 16px;">
+                        <div class="row g-3 align-items-end text-start">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-map-pin text-orange me-1"></i> Location</label>
+                                <select class="form-select border-2 p-2" id="home-search-location">
+                                    <option value="Mumbai">Mumbai, MH</option>
+                                    <option value="Delhi">Delhi, NCR</option>
+                                    <option value="Bangalore" selected>Bangalore, KA</option>
+                                    <option value="Chennai">Chennai, TN</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-plus text-orange me-1"></i> Pickup Date & Time</label>
+                                <input type="datetime-local" class="form-select border-2 p-2" id="home-search-pickup" value="2026-06-15T10:00">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-minus text-orange me-1"></i> Drop Date & Time</label>
+                                <input type="datetime-local" class="form-select border-2 p-2" id="home-search-drop" value="2026-06-17T18:00">
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-orange w-100 p-2 fs-5 fw-semibold" onclick="triggerSearch()"><i class="fa-solid fa-magnifying-glass me-2"></i>Search Cars</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container py-5 my-4">
+                <h2 class="text-center fw-bold mb-5">How It Works</h2>
+                <div class="row text-center g-4">
+                    <div class="col-md-4">
+                        <div class="p-4 bg-white rounded-4 shadow-sm border-0 h-100">
+                            <div class="fs-1 text-orange mb-3"><i class="fa-solid fa-map-location-dot"></i></div>
+                            <h4 class="fw-bold">1. Choose Location & Date</h4>
+                            <p class="text-muted">Pick your designated area and timelines to fetch highly customized available stock listings instantly.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-4 bg-white rounded-4 shadow-sm border-0 h-100">
+                            <div class="fs-1 text-orange mb-3"><i class="fa-solid fa-car-rear"></i></div>
+                            <h4 class="fw-bold">2. Pick Your Car</h4>
+                            <p class="text-muted">Select from our elite fleet featuring clean, meticulously audited, verified, and high-spec standard performance assets.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-4 bg-white rounded-4 shadow-sm border-0 h-100">
+                            <div class="fs-1 text-orange mb-3"><i class="fa-solid fa-key"></i></div>
+                            <h4 class="fw-bold">3. Enjoy the Ride</h4>
+                            <p class="text-muted">Complete continuous quick checkouts with optional premium doorstop drop deliveries. Ignite engines safely!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container py-5 border-top">
+                <h2 class="text-center fw-bold mb-5">What Our Drivers Say</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card p-4 border-0 shadow-sm h-100 bg-white">
+                            <div class="d-flex text-warning mb-2">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                            </div>
+                            <h5 class="fw-bold mb-1">Rohan Sharma</h5>
+                            <small class="text-orange d-block mb-3">Rented Toyota Innova Crysta</small>
+                            <p class="text-muted mb-0">"The absolute top-tier standard service! The automobile asset was immaculate, drop processes exceptionally smooth, and road trips completely seamless across highways."</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-4 border-0 shadow-sm h-100 bg-white">
+                            <div class="d-flex text-warning mb-2">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                            </div>
+                            <h5 class="fw-bold mb-1">Ananya Iyer</h5>
+                            <small class="text-orange d-block mb-3">Rented Honda City</small>
+                            <p class="text-muted mb-0">"Extremely direct operations, smooth customer verifications, premium interiors, and fantastic mileage. Will absolutely utilize RoadReady for all future travel."</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-4 border-0 shadow-sm h-100 bg-white">
+                            <div class="d-flex text-warning mb-2">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                            </div>
+                            <h5 class="fw-bold mb-1">Vikram Malhotra</h5>
+                            <small class="text-orange d-block mb-3">Rented Mahindra Thar</small>
+                            <p class="text-muted mb-0">"Impeccable execution! Everything from pricing disclosures, digital validation, to return check-ins was fully straightforward. Recommended across all parameters!"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="browse-page" class="app-page">
+            <div class="container py-4">
+                <div class="card p-3 border-0 shadow-sm mb-4 bg-white">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-3">
+                            <label class="small fw-bold text-muted">LOCATION</label>
+                            <select class="form-select" id="browse-filter-location">
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Bangalore" selected>Bangalore</option>
+                                <option value="Chennai">Chennai</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small fw-bold text-muted">PICKUP DATE</label>
+                            <input type="datetime-local" class="form-select" id="browse-filter-pickup" value="2026-06-15T10:00">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small fw-bold text-muted">DROP DATE</label>
+                            <input type="datetime-local" class="form-select" id="browse-filter-drop" value="2026-06-17T18:00">
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-orange w-100" onclick="syncAndSearch()"><i class="fa-solid fa-rotate me-2"></i>Update Search</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold mb-0 text-dark" id="results-counter">24 Cars Found</h4>
+                    <div class="d-flex align-items-center" style="max-width: 250px;">
+                        <span class="text-nowrap me-2 text-muted small fw-bold">SORT BY:</span>
+                        <select class="form-select form-select-sm" id="sort-select" onchange="renderCarGrid()">
+                            <option value="relevance">Relevance</option>
+                            <option value="low-high">Price: Low to High</option>
+                            <option value="high-low">Price: High to Low</option>
+                            <option value="rating">Rating: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-4" id="car-results-grid">
+                    </div>
+
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled"><a class="page-link text-muted" href="#">Previous</a></li>
+                        <li class="page-item active"><a class="page-link bg-dark-navy border-0" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </section>
+
+        <section id="detail-page" class="app-page">
+            <div class="container py-4">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" onclick="showPage('browse-page')" class="text-decoration-none text-muted">Browse Cars</a></li>
+                        <li class="breadcrumb-item active text-dark fw-bold" id="detail-crumb">Toyota Innova Crysta</li>
+                    </ol>
+                </nav>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm p-3 mb-4 bg-white">
+                            <div style="background-color: #e5e7eb; height: 380px; border-radius: 12px;" class="d-flex flex-column align-items-center justify-content-center mb-3 text-muted position-relative">
+                                <i class="fa-solid fa-car-side fa-5x"></i>
+                                <span class="mt-2 fw-medium">Premium Asset Verification Matrix Visual Display Area</span>
+                                <span class="position-absolute top-0 end-0 bg-success text-white px-3 py-1 m-3 rounded fw-bold" id="detail-status-badge">AVAILABLE</span>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-4"><div style="background-color: #d1d5db; height: 80px; border-radius: 8px;" class="d-flex align-items-center justify-content-center text-muted small"><i class="fa-solid fa-camera"></i></div></div>
+                                <div class="col-4"><div style="background-color: #d1d5db; height: 80px; border-radius: 8px;" class="d-flex align-items-center justify-content-center text-muted small"><i class="fa-solid fa-camera"></i></div></div>
+                                <div class="col-4"><div style="background-color: #d1d5db; height: 80px; border-radius: 8px;" class="d-flex align-items-center justify-content-center text-muted small"><i class="fa-solid fa-camera"></i></div></div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm p-4 mb-4 bg-white">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h2 class="fw-bold mb-0" id="detail-title">Toyota Innova Crysta 2023</h2>
+                            </div>
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="badge bg-success me-2"><i class="fa-solid fa-star me-1"></i><span id="detail-rating">4.8</span></span>
+                                <span class="text-muted small fw-semibold" id="detail-review-count">(42 verified trips)</span>
+                            </div>
+
+                            <h5 class="fw-bold mb-3 border-bottom pb-2">Technical Specification Matrix</h5>
+                            <div class="row g-3 mb-4" id="detail-specs-grid">
+                                </div>
+
+                            <h5 class="fw-bold mb-3 border-bottom pb-2">Vehicle Description</h5>
+                            <p class="text-muted leading-relaxed" id="detail-description">
+                                Experience ultimate premium configurations mixed perfectly with high durability architectures. Perfectly suited for extensive interstate journeys, family getaways, and luxury client transfers. This vehicle model includes highly structured electronic components, calibrated independent wheel tracking controls, and extensive interior luggage utility spacing matrix.
+                            </p>
+
+                            <h5 class="fw-bold mb-3 border-bottom pb-2">Features Checklist</h5>
+                            <div class="row g-2 mb-4">
+                                <div class="col-md-4 col-6"><i class="fa-solid fa-circle-check text-success me-2"></i>Air Conditioner</div>
+                                <div class="col-md-4 col-6"><i class="fa-solid fa-circle-check text-success me-2"></i>GPS Navigation</div>
+                                <div class="col-md-4 col-6"><i class="fa-solid fa-circle-check text-success me-2"></i>Bluetooth Media</div>
+                                <div class="col-md-4 col-6"><i class="fa-solid fa-circle-check text-success me-2"></i>USB Fast Charging</div>
+                                <div class="col-md-4 col-6"><i class="fa-solid fa-circle-check text-success me-2"></i>Child Seat Mounts</div>
+                                <div class="col-md-4 col-6"><i class="fa-solid fa-circle-check text-success me-2"></i>Insurance Included</div>
+                            </div>
+
+                            <h5 class="fw-bold mb-3 border-bottom pb-2">Fulfillment Protocols</h5>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-light text-dark border p-2"><i class="fa-solid fa-house text-orange me-1"></i> Home Delivery Available</span>
+                                <span class="badge bg-light text-dark border p-2"><i class="fa-solid fa-building text-orange me-1"></i> Self Pick-Up Allowed</span>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm p-4 bg-white">
+                            <h4 class="fw-bold mb-4">User Review Submissions</h4>
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-3" style="width: 44px; height: 44px;">KP</div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">Kishore Prasad</h6>
+                                        <small class="text-muted">June 1, 2026 &bull; <span class="text-warning"><i class="fa-solid fa-star"></i> 5/5</span></small>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-0 small">"Superb drive handling, cabin air conditioner works fantastically even through harsh sunlight exposures. Completely verified and validated status."</p>
+                            </div>
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-3" style="width: 44px; height: 44px;">ML</div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">Meera Lakshmi</h6>
+                                        <small class="text-muted">May 28, 2026 &bull; <span class="text-warning"><i class="fa-solid fa-star"></i> 4/5</span></small>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-0 small">"The physical machinery operates clean and smooth. Pickup was delivered exactly on scheduled minute indicators directly outside our residential gate boundaries."</p>
+                            </div>
+                            <div class="text-center">
+                                <a href="#" class="text-orange fw-bold text-decoration-none small">Load More Reviews...</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-lg p-4 bg-white sticky-top" style="top: 100px; border-radius: 16px;">
+                            <h4 class="fw-bold mb-1">Book This Car</h4>
+                            <div class="mb-3">
+                                <span class="fs-2 fw-bold text-orange" id="booking-card-rate">₹150</span><span class="text-muted fw-medium"> / hr</span>
+                            </div>
+                            
+                            <form id="calc-booking-form" onsubmit="event.preventDefault(); proceedToConfirmation();">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">PICKUP TIMELINE</label>
+                                    <input type="datetime-local" class="form-control border-2" id="book-input-pickup" required onchange="recalculatePriceMetrics()">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">RETURN TIMELINE</label>
+                                    <input type="datetime-local" class="form-control border-2" id="book-input-drop" required onchange="recalculatePriceMetrics()">
+                                </div>
+
+                                <div class="p-2 bg-light rounded text-center mb-3 border">
+                                    <small class="text-muted fw-bold d-block">TOTAL CALCULATED TIME</small>
+                                    <span class="fw-extrabold text-dark fs-5" id="book-calc-duration">0 Hours</span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted d-block">FULFILLMENT PATHWAY</label>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="book-delivery-type" id="del-self" value="Self" checked onchange="recalculatePriceMetrics()">
+                                        <label class="form-check-label" for="del-self">Self Pick-Up</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="book-delivery-type" id="del-home" value="Home" onchange="recalculatePriceMetrics()">
+                                        <label class="form-check-label" for="del-home">Home Delivery (+₹50)</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">PICKUP ADDR / LOCATION</label>
+                                    <input type="text" class="form-control" id="book-pickup-loc" value="Bangalore Airport Terminal Huber Desk" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label small fw-bold text-muted">RETURN ADDR / LOCATION</label>
+                                    <input type="text" class="form-control" id="book-drop-loc" value="Bangalore Airport Terminal Huber Desk" required>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3 border-top pt-3">
+                                    <span class="fw-bold text-dark fs-5">Estimated Total:</span>
+                                    <span class="fs-3 fw-extrabold text-orange" id="book-calc-total">₹0</span>
+                                </div>
+
+                                <button type="submit" class="btn btn-orange w-100 py-3 fs-5 fw-bold rounded-3 shadow-sm"><i class="fa-solid fa-bolt me-2"></i>Reserve Now</button>
+                            </form>
+
+                            <div class="text-center mt-3 text-muted small">
+                                <i class="fa-solid fa-lock text-success me-1"></i> Free cancellation within 24 hours of booking window.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="confirmation-page" class="app-page">
+            <div class="container py-4">
+                <h2 class="fw-bold mb-4">Complete Validation Review</h2>
+                
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="card p-4 border-0 shadow-sm mb-4 bg-white">
+                            <h4 class="fw-bold mb-2">Verify Your Details</h4>
+                            <div class="alert alert-info py-2 px-3 small border-0"><i class="fa-solid fa-circle-info me-2"></i>Please verify your information before confirming.</div>
+                            
+                            <form id="verify-details-form" onsubmit="event.preventDefault(); proceedToPayment();">
+                                <div class="row g-3">
+                                    <div class="col-md-10">
+                                        <label class="form-label small fw-bold text-muted">FULL LEGAL NAME</label>
+                                        <input type="text" class="form-control bg-light" value="Kumar Prajwal" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">COMMUNICATION EMAIL</label>
+                                        <input type="email" class="form-control bg-light" value="kumar@gmail.com" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">CONTACT PHONE NUMBER</label>
+                                        <input type="text" class="form-control bg-light" value="+91 9876543210" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">PICKUP TIMELINE VALUE</label>
+                                        <input type="text" class="form-control bg-light" id="conf-read-pickup" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">DROP TIMELINE VALUE</label>
+                                        <input type="text" class="form-control bg-light" id="conf-read-drop" readonly>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold text-muted">FULFILLMENT DELIVERY TYPE</label>
+                                        <input type="text" class="form-control bg-light" id="conf-read-delivery" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">EDITABLE PICKUP LOCATION</label>
+                                        <input type="text" class="form-control border-2" id="conf-edit-pickup-loc" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">EDITABLE DROP LOCATION</label>
+                                        <input type="text" class="form-control border-2" id="conf-edit-drop-loc" required>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 pt-3 border-top">
+                                    <label class="form-label small fw-bold text-muted">PROMOTIONAL DISCOUNTS & COUPONS</label>
+                                    <div class="input-group" style="max-width: 400px;">
+                                        <input type="text" class="form-control" id="coupon-input-field" placeholder="Try entering: SAVE20">
+                                        <button class="btn btn-dark" type="button" onclick="applyDiscountToken()">Apply</button>
+                                    </div>
+                                    <div class="mt-2 small fw-bold d-none" id="coupon-alert-success" class="text-success" style="color: var(--success-green);"><i class="fa-solid fa-circle-check"></i> SAVE20 applied! &minus;₹250</div>
+                                    <div class="mt-2 small fw-bold d-none" id="coupon-alert-error" class="text-danger" style="color: var(--danger-red);"><i class="fa-solid fa-triangle-exclamation"></i> Invalid coupon</div>
+                                </div>
+
+                                <button type="submit" class="btn btn-orange w-100 py-3 mt-4 fs-5 fw-bold">Proceed to Payment</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card p-4 border-0 shadow-sm bg-white">
+                            <h4 class="fw-bold mb-3">Price Summary</h4>
+                            <div class="d-flex align-items-center mb-3 bg-light p-3 rounded">
+                                <div style="width: 70px; height: 50px; background-color: #d1d5db; border-radius: 4px;" class="d-flex align-items-center justify-content-center text-muted me-3"><i class="fa-solid fa-car"></i></div>
+                                <div>
+                                    <h6 class="fw-bold mb-0" id="conf-summary-carname">Toyota Innova Crysta</h6>
+                                    <span class="badge bg-success small" id="conf-summary-carrating">★ 4.8</span>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mb-3 text-muted small">
+                                <div class="d-flex justify-content-between mb-1"><span>Duration Badge Allocation:</span><strong class="text-dark" id="conf-summary-duration">0 Hours</strong></div>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Original Calculated Cost</span>
+                                <span class="fw-medium text-dark" id="conf-breakdown-base">₹0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Fulfillment Logistics Handling</span>
+                                <span class="fw-medium text-dark" id="conf-breakdown-delivery">+₹0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 text-success d-none" id="conf-breakdown-discount-row">
+                                <span>Coupon Promotional Discount</span>
+                                <span class="fw-medium" id="conf-breakdown-discount">&minus;₹0</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-dark fs-5">Total Payable Amount</span>
+                                <span class="fw-extrabold text-orange fs-3" id="conf-breakdown-total">₹0</span>
+                            </div>
+                            <small class="text-muted d-block text-end">Inclusive of all local goods, services, and structural taxes</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="payment-page" class="app-page">
+            <div class="container py-4">
+                <h2 class="fw-bold mb-4">Secure Settlement Clearinghouse</h2>
+                
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="card p-4 border-0 shadow-sm mb-4 bg-white">
+                            <h4 class="fw-bold mb-4">Payment Method</h4>
+                            
+                            <div class="card p-3 border-2 mb-3 cursor-pointer" id="pay-select-card-wrapper" style="border-color: var(--primary-orange);">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment-method-options" id="pay-opt-card" value="card" checked onchange="togglePaymentGatewayForms()">
+                                    <label class="form-check-label fw-bold d-flex justify-content-between w-100" for="pay-opt-card">
+                                        <span><i class="fa-solid fa-credit-card me-2 text-muted"></i>Credit / Debit Card Security Clearing</span>
+                                        <span class="text-muted small"><i class="fa-brands fa-cc-visa"></i> <i class="fa-brands fa-cc-mastercard"></i></span>
+                                    </label>
+                                </div>
+                                
+                                <div id="form-container-card" class="mt-3">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label small fw-bold text-muted">16-DIGIT CARD NUMBER</label>
+                                            <input type="text" class="form-control" placeholder="4111 2222 3333 4444" id="pay-card-num">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small fw-bold text-muted">CARDHOLDER NAME REFERENCE</label>
+                                            <input type="text" class="form-control" placeholder="KUMAR PRAJWAL" id="pay-card-name">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-bold text-muted">EXPIRY MM/YY</label>
+                                            <input type="text" class="form-control" placeholder="12/29" id="pay-card-expiry">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-bold text-muted">SECURE CVV</label>
+                                            <input type="password" class="form-control" placeholder="***" maxlength="3" id="pay-card-cvv">
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="save-card-chk" checked>
+                                                <label class="form-check-label small text-muted" for="save-card-chk">Save secure tokens for upcoming asset deployments safely.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card p-3 border mb-3 text-muted" id="pay-select-upi-wrapper">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment-method-options" id="pay-opt-upi" value="upi" onchange="togglePaymentGatewayForms()">
+                                    <label class="form-check-label fw-bold" for="pay-opt-upi">
+                                        <i class="fa-solid fa-mobile-screen-button me-2"></i>Unified Payments Interface (UPI Integration)
+                                    </label>
+                                </div>
+                                <div id="form-container-upi" class="mt-3 d-none">
+                                    <label class="form-label small fw-bold text-muted">VIRTUAL PAYMENT ADDRESS (VPA / UPI ID)</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="username@okhdfcbank" id="pay-upi-id">
+                                        <button class="btn btn-dark" type="button" onclick="alert('Virtual address verified successfully!')">Verify VPA</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card p-3 border mb-4 text-muted" id="pay-select-net-wrapper">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="payment-method-options" id="pay-opt-net" value="net" onchange="togglePaymentGatewayForms()">
+                                    <label class="form-check-label fw-bold" for="pay-opt-net">
+                                        <i class="fa-solid fa-building-columns me-2"></i>Net Banking Gateway Portal
+                                    </label>
+                                </div>
+                                <div id="form-container-net" class="mt-3 d-none">
+                                    <label class="form-label small fw-bold text-muted">CHOOSE ACCOUNT INFRASTRUCTURE BANK</label>
+                                    <select class="form-select" id="pay-net-bank">
+                                        <option value="">-- Choose Corporate/Retail Institution --</option>
+                                        <option value="SBI">State Bank of India</option>
+                                        <option value="HDFC">HDFC Bank Limited</option>
+                                        <option value="ICICI">ICICI Bank Infrastructure</option>
+                                        <option value="AXIS">Axis Bank Corporate Portal</option>
+                                        <option value="KOTAK">Kotak Mahindra System</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between p-2 bg-light border rounded text-muted small">
+                                <span><i class="fa-solid fa-shield-halved text-success me-2"></i> 256-bit SSL Secured Encryption Tunnel</span>
+                                <i class="fa-brands fa-pushed"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card p-4 border-0 shadow-sm bg-white">
+                            <h4 class="fw-bold mb-3">Order Summary</h4>
+                            <div class="d-flex align-items-center mb-3 bg-light p-3 rounded">
+                                <div style="width: 70px; height: 50px; background-color: #d1d5db; border-radius: 4px;" class="d-flex align-items-center justify-content-center text-muted me-3"><i class="fa-solid fa-car"></i></div>
+                                <div>
+                                    <h6 class="fw-bold mb-0" id="pay-summary-carname">Toyota Innova Crysta</h6>
+                                    <small class="text-muted d-block" id="pay-summary-cartags">Diesel &bull; 7 Seats</small>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-2 text-muted small">
+                                <span>Calculated Base Term:</span>
+                                <span id="pay-summary-base">₹0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 text-muted small">
+                                <span>Fulfillment Logistics Drop:</span>
+                                <span id="pay-summary-delivery">+₹0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 text-success small d-none" id="pay-summary-discount-row">
+                                <span>Token Coupon Deduction:</span>
+                                <span id="pay-summary-discount">&minus;₹0</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <span class="fw-bold text-dark fs-5">Amount Due:</span>
+                                <span class="fw-extrabold text-orange fs-3" id="pay-summary-total">₹0</span>
+                            </div>
+
+                            <button class="btn btn-orange w-100 py-3 fs-5 fw-extrabold shadow-sm text-capitalize" id="pay-submit-btn-text" onclick="executeSecurePaymentWorkflow()">Pay ₹0</button>
+                            <p class="text-center text-muted small mt-3 mb-0">By completing transaction clearings, you agree directly to standard operational disclosures, safety parameters, and rental specifications terms.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="success-page" class="app-page confetti-wrapper">
+            <div id="confetti-holder-div"></div>
+
+            <div class="container py-5 text-center">
+                <div class="card p-5 border-0 shadow-lg mx-auto bg-white" style="max-width: 700px; border-radius: 20px;">
+                    <div class="pulse-circle">
+                        <i class="fa-solid fa-circle-check fa-3x text-success"></i>
+                    </div>
+                    <h1 class="fw-extrabold text-success mb-2">Booking Confirmed!</h1>
+                    <p class="lead text-muted mb-4">Transaction cleared. Your vehicle asset has been allocated successfully.</p>
+                    
+                    <div class="bg-dark-navy text-white py-2 px-4 rounded-pill d-inline-block fw-bold mb-4 fs-5">
+                        Booking ID: <span class="text-orange" id="success-read-id">#RR-2026-00892</span>
+                    </div>
+
+                    <div class="card text-start p-3 bg-light border mb-4">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-sm-4">
+                                <div style="background-color: #cbd5e1; height: 100px; border-radius: 8px;" class="d-flex align-items-center justify-content-center text-muted"><i class="fa-solid fa-car fa-2x"></i></div>
+                            </div>
+                            <div class="col-sm-8">
+                                <h5 class="fw-bold mb-1" id="success-carname">Toyota Innova Crysta 2023</h5>
+                                <div class="text-muted small mb-2" id="success-dates">June 15, 10:00 AM &rarr; June 17, 06:00 PM</div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="small text-muted"><i class="fa-solid fa-map-pin text-orange me-1"></i> <span id="success-location">Bangalore Airport</span></span>
+                                    <span class="badge bg-success p-2 fs-6" id="success-badge-total">Paid ₹7,300</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded text-muted mb-4 border border-success">
+                        <i class="fa-solid fa-envelope text-orange me-2"></i> Confirmation manifest paperwork transmission sent out safely to <strong class="text-dark">kumar@gmail.com</strong>
+                    </div>
+
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button class="btn btn-outline-orange px-4 py-2 fw-bold" onclick="showProfileTab('bookings')">View My Bookings</button>
+                        <button class="btn btn-orange px-4 py-2 fw-bold" onclick="showPage('home-page')">Back to Home</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="login-page" class="app-page">
+            <div class="container-fluid p-0">
+                <div class="row g-0 align-items-stretch" style="min-height: 100vh;">
+                    <div class="col-lg-5 split-left">
+                        <a class="text-white text-decoration-none fw-extrabold fs-1 mb-3" href="#" onclick="showPage('home-page')"><i class="fa-solid fa-car-side text-orange me-2"></i>Road<span class="text-orange">Ready</span></a>
+                        <h3 class="fw-bold text-center text-light">Your Journey Starts Here</h3>
+                        <p class="text-center text-light opacity-75 small max-width-350 mb-5">Access top-tier premium mobility solutions instantly across global metropolitan hubs seamlessly.</p>
+                        
+                        <div class="row g-2 w-100 px-3 opacity-50">
+                            <div class="col-4"><div style="background: white; height: 60px; border-radius:6px;"></div></div>
+                            <div class="col-4"><div style="background: white; height: 60px; border-radius:6px;"></div></div>
+                            <div class="col-4"><div style="background: white; height: 60px; border-radius:6px;"></div></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7 d-flex align-items-center justify-content-center bg-white py-5">
+                        <div class="p-4 p-md-5 w-100" style="max-width: 480px;">
+                            <h2 class="fw-extrabold text-dark mb-1">Welcome Back</h2>
+                            <p class="text-muted mb-4">Provide systemic account parameters to access secure car bookings.</p>
+                            
+                            <form id="login-form-submit" onsubmit="event.preventDefault(); simulateSuccessLoginState();">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">USERNAME OR EMAIL ADDRESS</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fa-solid fa-user text-muted"></i></span>
+                                        <input type="text" class="form-control" id="login-username-val" value="kumar_prajwal" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">PASSWORD MATRIX</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fa-solid fa-lock text-muted"></i></span>
+                                        <input type="password" class="form-control" id="login-password-val" value="SecretPassword123" required>
+                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordInputEyeVisibility('login-password-val')"><i class="fa-solid fa-eye"></i></button>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="remember-me-chk" checked>
+                                        <label class="form-check-label small text-muted" for="remember-me-chk">Stay Logged In</label>
+                                    </div>
+                                    <a href="#" class="text-decoration-none small text-orange fw-bold" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot Password?</a>
+                                </div>
+
+                                <button type="submit" class="btn btn-orange w-100 py-3 fs-5 fw-bold mb-4">Login</button>
+
+                                <div class="text-center text-muted small">
+                                    Don't have an account? <a href="#" class="text-orange text-decoration-none fw-bold" onclick="showPage('register-page')">Register</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="register-page" class="app-page">
+            <div class="container-fluid p-0">
+                <div class="row g-0 align-items-stretch" style="min-height: 100vh;">
+                    <div class="col-lg-5 split-left">
+                        <a class="text-white text-decoration-none fw-extrabold fs-1 mb-3" href="#" onclick="showPage('home-page')"><i class="fa-solid fa-car-side text-orange me-2"></i>Road<span class="text-orange">Ready</span></a>
+                        <h3 class="fw-bold text-center text-light">Your Journey Starts Here</h3>
+                        <p class="text-center text-light opacity-75 small max-width-350 mb-5">Access top-tier premium mobility solutions instantly across global metropolitan hubs seamlessly.</p>
+                        <div class="row g-2 w-100 px-3 opacity-50">
+                            <div class="col-4"><div style="background: white; height: 60px; border-radius:6px;"></div></div>
+                            <div class="col-4"><div style="background: white; height: 60px; border-radius:6px;"></div></div>
+                            <div class="col-4"><div style="background: white; height: 60px; border-radius:6px;"></div></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7 d-flex align-items-center justify-content-center bg-white py-5">
+                        <div class="p-4 p-md-5 w-100" style="max-width: 550px;">
+                            <h2 class="fw-extrabold text-dark mb-1">Create Account</h2>
+                            <p class="text-muted mb-4">Register your system details safely to establish a personal account profile dashboard.</p>
+                            
+                            <form id="registration-system-form" onsubmit="event.preventDefault(); triggerProfileRegistrationValidation();">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold text-muted">FIRST NAME</label>
+                                        <input type="text" class="form-control text-uppercase" id="reg-fname" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold text-muted">LAST NAME</label>
+                                        <input type="text" class="form-control text-uppercase" id="reg-lname" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">MOBILE TELEPHONE NUMBER</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light small fw-bold">+91</span>
+                                        <input type="tel" class="form-control" id="reg-phone" placeholder="98765 43210" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">EMAIL ADDRESS</label>
+                                    <input type="email" class="form-control" id="reg-email" placeholder="name@domain.com" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">DESIRED UNIQUE USERNAME</label>
+                                    <input type="text" class="form-control" id="reg-username" placeholder="alpha_numeric_tags" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">PASSWORD CHANNELS</label>
+                                    <div class="input-group mb-1">
+                                        <input type="password" class="form-control" id="reg-pass" oninput="calculatePasswordMetricsStrength()" required>
+                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordInputEyeVisibility('reg-pass')"><i class="fa-solid fa-eye"></i></button>
+                                    </div>
+                                    <div class="progress rounded-pill bg-light" style="height: 6px;">
+                                        <div class="progress-bar strength-bar" id="reg-strength-indicator" role="progressbar"></div>
+                                    </div>
+                                    <small class="text-muted d-block mt-1" style="font-size:0.75rem;" id="reg-strength-label">Password security meter: Empty</small>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label small fw-bold text-muted">CONFIRM SECURE PASSWORD</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="reg-pass-confirm" oninput="verifyPasswordMatchStateIndicators()" required>
+                                        <span class="input-group-text bg-white text-muted" id="reg-match-status-icon"><i class="fa-solid fa-minus"></i></span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-orange w-100 py-3 fs-5 fw-bold mb-4">Register as Customer</button>
+
+                                <div class="text-center text-muted small">
+                                    Already have an account? <a href="#" class="text-orange text-decoration-none fw-bold" onclick="showPage('login-page')">Login</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="profile-page" class="app-page">
+            <div class="container py-4">
+                <div class="row g-4">
+                    <div class="col-lg-3">
+                        <div class="card p-3 border-0 shadow-sm bg-white text-center mb-3">
+                            <div class="bg-orange text-white rounded-circle d-flex align-items-center justify-content-center fw-extrabold mx-auto mb-3 fs-2" style="width: 75px; height: 75px; background-color: var(--primary-orange);">
+                                KP
+                            </div>
+                            <h5 class="fw-bold text-dark mb-0">Kumar Prajwal</h5>
+                            <small class="text-muted d-block mb-3">@kumar_prajwal</small>
+                            <span class="badge bg-light text-dark border py-1 px-3 rounded-pill small">Member Since 2026</span>
+                        </div>
+
+                        <div class="card border-0 shadow-sm bg-white p-2">
+                            <nav class="nav flex-column profile-nav">
+                                <a class="nav-link active py-2.5 rounded mb-1" href="#" id="prof-link-info" onclick="toggleActiveProfileTabs('info')"><i class="fa-solid fa-id-card me-2"></i>My Profile</a>
+                                <a class="nav-link py-2.5 rounded mb-1" href="#" id="prof-link-bookings" onclick="toggleActiveProfileTabs('bookings')"><i class="fa-solid fa-clock-history me-2"></i>My Bookings</a>
+                                <a class="nav-link py-2.5 rounded" href="#" id="prof-link-reviews" onclick="toggleActiveProfileTabs('reviews')"><i class="fa-solid fa-star-half-stroke me-2"></i>My Reviews</a>
+                                <hr class="my-2">
+                                <a class="nav-link text-danger py-2.5 rounded" href="#" onclick="logoutUserSessionSequence()"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-9">
+                        
+                        <div id="tab-content-info" class="profile-tab-block">
+                            <div class="card p-4 border-0 shadow-sm bg-white mb-4 position-relative">
+                                <button class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-4 fw-bold" id="profile-edit-toggle-btn" onclick="toggleProfileFormEditMode()"><i class="fa-solid fa-pencil me-1"></i>Edit</button>
+                                <h4 class="fw-bold mb-4">Personal Information</h4>
+                                
+                                <form id="profile-details-submission-form" onsubmit="event.preventDefault(); saveProfileChangesFormMode();">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-muted">FIRST NAME</label>
+                                            <input type="text" class="form-control profile-input-field text-uppercase" id="prof-val-fname" value="KUMAR" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-muted">LAST NAME</label>
+                                            <input type="text" class="form-control profile-input-field text-uppercase" id="prof-val-lname" value="PRAJWAL" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-muted">EMAIL SPECIFICATION</label>
+                                            <input type="email" class="form-control profile-input-field" id="prof-val-email" value="kumar@gmail.com" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-muted">MOBILE PHONE CONTACT</label>
+                                            <input type="text" class="form-control profile-input-field" id="prof-val-phone" value="+91 9876543210" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-muted">GENDER DROPDOWN SELECTION</label>
+                                            <select class="form-select profile-input-field" id="prof-val-gender" disabled>
+                                                <option value="Male" selected>Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other / Decline</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-muted">SYSTEM USERNAME (READ-ONLY)</label>
+                                            <input type="text" class="form-control bg-light" value="kumar_prajwal" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 d-none" id="profile-save-actions-row">
+                                        <button type="submit" class="btn btn-orange px-4 fw-bold">Save Changes</button>
+                                        <button type="button" class="btn btn-light px-3 border border-dark ms-2" onclick="toggleProfileFormEditMode(true)">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="card p-4 border-0 shadow-sm bg-white">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 class="fw-bold mb-0">KYC Validation Matrix</h4>
+                                    <span class="badge bg-warning text-dark px-3 py-2 fs-6" id="kyc-status-global-badge">PENDING VERIFICATION</span>
+                                </div>
+                                <p class="text-muted small">Upload matching statutory identification files below to activate operational permissions for rental vehicle checkouts.</p>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="p-3 border rounded text-center bg-light">
+                                            <h6 class="fw-bold mb-1">Aadhaar Card</h6>
+                                            <span class="text-success small d-block mb-2 fw-medium"><i class="fa-solid fa-circle-check"></i> Uploaded Matrix ✓</span>
+                                            <button class="btn btn-sm btn-outline-dark w-100" onclick="alert('Re-upload triggered for identity reference file.')">Re-upload File</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-3 border rounded text-center bg-light">
+                                            <h6 class="fw-bold mb-1">Driving License</h6>
+                                            <span class="text-success small d-block mb-2 fw-medium"><i class="fa-solid fa-circle-check"></i> Uploaded Matrix ✓</span>
+                                            <button class="btn btn-sm btn-outline-dark w-100" onclick="alert('Re-upload triggered for driving permit asset.')">Re-upload File</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-3 border rounded text-center bg-light">
+                                            <h6 class="fw-bold mb-1">Passport / Voter ID</h6>
+                                            <span class="text-muted small d-block mb-2 fw-medium"><i class="fa-solid fa-circle-minus"></i> Missing/Omitted</span>
+                                            <button class="btn btn-sm btn-orange w-100" onclick="alert('Upload stream processing triggered.')">Upload Document</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-content-bookings" class="profile-tab-block d-none">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="fw-bold mb-0">My Rental Orders</h4>
+                                <div class="btn-group btn-group-sm bg-white shadow-sm rounded">
+                                    <button class="btn btn-dark btn-sm">All</button>
+                                    <button class="btn btn-light btn-sm text-muted">Ongoing</button>
+                                    <button class="btn btn-light btn-sm text-muted">Completed</button>
+                                    <button class="btn btn-light btn-sm text-muted">Cancelled</button>
+                                </div>
+                            </div>
+
+                            <div id="bookings-dynamic-stack-container">
+                                </div>
+
+                            <nav class="mt-4">
+                                <ul class="pagination pagination-sm justify-content-end">
+                                    <li class="page-item disabled"><a class="page-link" href="#">Prev</a></li>
+                                    <li class="page-item active"><a class="page-link bg-dark-navy border-0" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link text-dark" href="#">Next</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <div id="tab-content-reviews" class="profile-tab-block d-none">
+                            <div class="card p-4 border-0 shadow-sm bg-white">
+                                <h4 class="fw-bold mb-4">My Submitted Reviews</h4>
+                                <div id="reviews-history-root-node">
+                                    <p class="text-muted mb-0 py-3 text-center"><i class="fa-solid fa-folder-open d-block fs-2 mb-2"></i>No reviews submitted by this account profile yet.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-dark-navy text-white pt-5 pb-3 border-top border-secondary mt-auto">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <h5 class="fw-extrabold text-orange mb-3"><i class="fa-solid fa-car-side me-2"></i>RoadReady</h5>
+                    <p class="small text-light opacity-75">Elite global car asset rental network providing streamlined logistics, verified components, premium assurance matrices, and transparent checkout protocols safely.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="fw-bold text-white mb-3">Quick Links</h5>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="#" onclick="showPage('home-page')" class="text-light text-decoration-none opacity-75">Home Dashboard</a></li>
+                        <li class="mb-2"><a href="#" onclick="showPage('browse-page')" class="text-light text-decoration-none opacity-75">Browse Available Fleet</a></li>
+                        <li class="mb-2"><a href="#" class="text-light text-decoration-none opacity-75">Terms of Service Disclosures</a></li>
+                        <li class="mb-2"><a href="#" class="text-light text-decoration-none opacity-75">Privacy Protection Guidelines</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="fw-bold text-white mb-3">Contact Support</h5>
+                    <p class="small text-light opacity-75 mb-1"><i class="fa-solid fa-envelope text-orange me-2"></i> support@roadready-rentals.in</p>
+                    <p class="small text-light opacity-75"><i class="fa-solid fa-phone text-orange me-2"></i> +91 1800-419-8900 (Toll Free)</p>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="text-center small text-light opacity-50">
+                &copy; 2026 RoadReady Fleet Systems Private Limited. All operational parameters secured comprehensively.
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+            <div class="modal-content border-0 p-3">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-key text-orange me-2"></i>Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-forgot-pass-modal-x"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <p class="text-muted small">Provide the system email profile linked with your account access protocols. We will instantly dispatch a secure validation recovery credential link.</p>
+                    <form onsubmit="event.preventDefault(); handleSecurePasswordResetTrigger();">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">ACCOUNT EMAIL ADDRESS</label>
+                            <input type="email" class="form-control border-2" placeholder="name@domain.com" id="forgot-pass-email-field" required>
+                        </div>
+                        <button type="submit" class="btn btn-orange w-100 py-2 fw-bold mb-3">Send Reset Link</button>
+                        <div class="text-center">
+                            <a href="#" class="small text-decoration-none text-muted fw-bold" data-bs-dismiss="modal">Back to Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="cancelBookingConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px;">
+            <div class="modal-content border-0 p-3">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Confirm Order Cancellation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-cancel-booking-modal-x"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <p class="text-muted mb-3">Are you sure you want to cancel? Cancellation charges may apply depending on the timing of your cancellation relative to your scheduled rental window.</p>
+                    <div class="p-2 bg-light rounded text-muted small mb-4 border">
+                        <i class="fa-solid fa-circle-info text-warning me-2"></i>Standard Policy: Cancellations filed within 24 hours of target operational deployment timeline windows trigger a 10% platform cleanup surcharge.
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light border border-secondary flex-grow-1" data-bs-toggle="modal">Keep Booking</button>
+                        <button type="button" class="btn btn-danger flex-grow-1 fw-bold" onclick="executeConfirmedBookingCancellationSequence()">Confirm Cancellation</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        /*************************************************************************
+         * GLOBAL APPLICATION STATE CONTROLLER
+         *************************************************************************/
+        const APP_STATE = {
+            isLoggedIn: false,
+            currentSelectedCarId: 1,
+            activeCouponApplied: false,
+            activeCouponDiscountValue: 0,
+            searchFilters: {
+                location: 'Bangalore',
+                pickup: '2026-06-15T10:00',
+                drop: '2026-06-17T18:00'
+            },
+            temporaryTargetCancellationId: null,
+            
+            // Central Mock Database Inventory Record Sets
+            carsDatabase: [
+                { id: 1, name: 'Toyota Innova Crysta', year: 2023, rate: 150, rating: 4.8, reviews: 42, fuel: 'Diesel', seats: 7, odometer: '34,200 km', brand: 'Toyota', model: 'Innova Crysta' },
+                { id: 2, name: 'Honda City i-VTEC', year: 2022, rate: 95, rating: 4.5, reviews: 29, fuel: 'Petrol', seats: 5, odometer: '21,500 km', brand: 'Honda', model: 'City' },
+                { id: 3, name: 'Mahindra Thar 4x4', year: 2023, rate: 180, rating: 4.7, reviews: 56, fuel: 'Diesel', seats: 4, odometer: '18,900 km', brand: 'Mahindra', model: 'Thar' },
+                { id: 4, name: 'Hyundai i20 Asta', year: 2021, rate: 75, rating: 4.3, reviews: 18, fuel: 'Petrol', seats: 5, odometer: '42,100 km', brand: 'Hyundai', model: 'i20' },
+                { id: 5, name: 'Maruti Suzuki Brezza', year: 2022, rate: 85, rating: 4.4, reviews: 22, fuel: 'Petrol', seats: 5, odometer: '29,400 km', brand: 'Maruti', model: 'Brezza' },
+                { id: 6, name: 'Tata Nexon EV Prime', year: 2023, rate: 120, rating: 4.6, reviews: 31, fuel: 'Electric', seats: 5, odometer: '12,300 km', brand: 'Tata', model: 'Nexon EV' }
+            ],
+
+            // Active Trackers for dynamic state updates
+            userActiveBookings: [
+                { id: 'RR-2026-00311', carName: 'Honda City i-VTEC', pickup: '2026-06-15 10:00 AM', drop: '2026-06-17 06:00 PM', location: 'Bangalore Airport', delivery: 'Self Pick-Up', total: 4560, status: 'Confirmed' }
+            ]
+        };
+
+        /*************************************************************************
+         * CORE APP NAVIGATION LAYOUT CONTROLLER ARCHITECTURE
+         *************************************************************************/
+        function showPage(pageId) {
+            // Guard conditions: redirect to login if profile/checkout is accessed while logged out
+            if (!APP_STATE.isLoggedIn && (pageId === 'profile-page' || pageId === 'confirmation-page' || pageId === 'payment-page')) {
+                pageId = 'login-page';
+            }
+
+            // Hide all pages, show requested target block element
+            document.querySelectorAll('.app-page').forEach(page => page.classList.remove('active'));
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+
+            // Dynamic view refreshes depending on page changes
+            if (pageId === 'browse-page') {
+                renderCarGrid();
+            } else if (pageId === 'detail-page') {
+                renderCarDetailView();
+            } else if (pageId === 'profile-page') {
+                renderUserBookingsListStack();
+            }
+        }
+
+        // Synchronize search variables across form screens smoothly
+        function triggerSearch() {
+            APP_STATE.searchFilters.location = document.getElementById('home-search-location').value;
+            APP_STATE.searchFilters.pickup = document.getElementById('home-search-pickup').value;
+            APP_STATE.searchFilters.drop = document.getElementById('home-search-drop').value;
+
+            // Sync controls into browse page form references
+            document.getElementById('browse-filter-location').value = APP_STATE.searchFilters.location;
+            document.getElementById('browse-filter-pickup').value = APP_STATE.searchFilters.pickup;
+            document.getElementById('browse-filter-drop').value = APP_STATE.searchFilters.drop;
+
+            showPage('browse-page');
+        }
+
+        function syncAndSearch() {
+            APP_STATE.searchFilters.location = document.getElementById('browse-filter-location').value;
+            APP_STATE.searchFilters.pickup = document.getElementById('browse-filter-pickup').value;
+            APP_STATE.searchFilters.drop = document.getElementById('browse-filter-drop').value;
+            renderCarGrid();
+        }
+
+        /*************************************************************************
+         * PAGE 2: BROWSE FLEET GENERATOR ENGINE & SORT CONFIGURATOR
+         *************************************************************************/
+        function renderCarGrid() {
+            const container = document.getElementById('car-results-grid');
+            if (!container) return;
+
+            let inventoryCopy = [...APP_STATE.carsDatabase];
+            const sortBy = document.getElementById('sort-select').value;
+
+            // Process user-selected sort options
+            if (sortBy === 'low-high') {
+                inventoryCopy.sort((a, b) => a.rate - b.rate);
+            } else if (sortBy === 'high-low') {
+                inventoryCopy.sort((a, b) => b.rate - a.rate);
+            } else if (sortBy === 'rating') {
+                inventoryCopy.sort((a, b) => b.rating - a.rating);
+            }
+
+            document.getElementById('results-counter').innerText = `${inventoryCopy.length} Cars Found Available in ${APP_STATE.searchFilters.location}`;
+
+            container.innerHTML = '';
+            inventoryCopy.forEach(car => {
+                const cardCol = document.createElement('div');
+                cardCol.className = 'col-lg-4 col-md-6 col-12';
+                cardCol.innerHTML = `
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white hover-lift">
+                        <div style="background-color: #e5e7eb; height: 180px;" class="d-flex align-items-center justify-content-center text-muted position-relative">
+                            <i class="fa-solid fa-car fa-4x"></i>
+                            <span class="position-absolute top-0 end-0 m-3 rating-badge"><i class="fa-solid fa-star me-1"></i>${car.rating}</span>
+                        </div>
+                        <div class="card-body d-flex flex-column p-4">
+                            <h5 class="fw-bold text-dark mb-1">${car.name}</h5>
+                            <span class="text-muted small fw-bold mb-3">Model Year Matrix: ${car.year}</span>
+                            
+                            <div class="d-flex gap-2 mb-3 flex-wrap">
+                                <span class="badge bg-light text-dark border"><i class="fa-solid fa-gas-pump me-1 text-muted"></i>${car.fuel}</span>
+                                <span class="badge bg-light text-dark border"><i class="fa-solid fa-chair me-1 text-muted"></i>${car.seats} Seats</span>
+                            </div>
+                            
+                            <div class="text-muted small mb-4">
+                                <i class="fa-solid fa-location-dot text-orange me-1"></i> Hub Base: Location ${APP_STATE.searchFilters.location}
+                            </div>
+                            
+                            <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
+                                <div>
+                                    <span class="fs-4 fw-extrabold text-orange">₹${car.rate}</span><span class="text-muted small"> / hr</span>
+                                </div>
+                                <button class="btn btn-outline-orange px-3 fw-bold rounded-3 btn-sm" onclick="viewCarDetailsSpecRecord(${car.id})">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(cardCol);
+            });
+        }
+
+        function viewCarDetailsSpecRecord(carId) {
+            APP_STATE.currentSelectedCarId = carId;
+            showPage('detail-page');
+        }
+
+        /*************************************************************************
+         * PAGE 3: CAR DETAIL CONFIGURATION RENDERING PIPELINE
+         *************************************************************************/
+        function renderCarDetailView() {
+            const car = APP_STATE.carsDatabase.find(c => c.id === APP_STATE.currentSelectedCarId);
+            if (!car) return;
+
+            // Load textual identifiers safely
+            document.getElementById('detail-crumb').innerText = car.name;
+            document.getElementById('detail-title').innerText = `${car.name} ${car.year}`;
+            document.getElementById('detail-rating').innerText = car.rating;
+            document.getElementById('detail-review-count').innerText = `(${car.reviews} verified client trips)`;
+            document.getElementById('booking-card-rate').innerText = `₹${car.rate}`;
+
+            // Technical Specs Matrix Generation Loop
+            const specsGrid = document.getElementById('detail-specs-grid');
+            specsGrid.innerHTML = `
+                <div class="col-6"><div class="p-2 border rounded bg-light"><small class="text-muted d-block uppercase small fw-bold">BRAND</small><span class="fw-bold">${car.brand}</span></div></div>
+                <div class="col-6"><div class="p-2 border rounded bg-light"><small class="text-muted d-block uppercase small fw-bold">MODEL SPEC</small><span class="fw-bold">${car.model}</span></div></div>
+                <div class="col-6"><div class="p-2 border rounded bg-light"><small class="text-muted d-block uppercase small fw-bold">YEAR</small><span class="fw-bold">${car.year}</span></div></div>
+                <div class="col-6"><div class="p-2 border rounded bg-light"><small class="text-muted d-block uppercase small fw-bold">FUEL TECH</small><span class="fw-bold">${car.fuel}</span></div></div>
+                <div class="col-6"><div class="p-2 border rounded bg-light"><small class="text-muted d-block uppercase small fw-bold">SEATING INDEX</small><span class="fw-bold">${car.seats} Seats</span></div></div>
+                <div class="col-6"><div class="p-2 border rounded bg-light"><small class="text-muted d-block uppercase small fw-bold">ODOMETER RECT</small><span class="fw-bold">${car.odometer}</span></div></div>
+            `;
+
+            // Sync user timeline variables into input cards
+            document.getElementById('book-input-pickup').value = APP_STATE.searchFilters.pickup;
+            document.getElementById('book-input-drop').value = APP_STATE.searchFilters.drop;
+
+            recalculatePriceMetrics();
+        }
+
+        function calculateCalculatedTotalHours(startStr, endStr) {
+            if (!startStr || !endStr) return 0;
+            const start = new Date(startStr);
+            const end = new Date(endStr);
+            if (isNaN(start) || !isNaN(end)) {
+                const deltaMs = end - start;
+                if (deltaMs <= 0) return 0;
+                return Math.ceil(deltaMs / (1000 * 60 * 60));
+            }
+            return 0;
+        }
+
+        function recalculatePriceMetrics() {
+            const car = APP_STATE.carsDatabase.find(c => c.id === APP_STATE.currentSelectedCarId);
+            if (!car) return;
+
+            const pickupVal = document.getElementById('book-input-pickup').value;
+            const dropVal = document.getElementById('book-input-drop').value;
+            
+            const hours = calculateCalculatedTotalHours(pickupVal, dropVal);
+            document.getElementById('book-calc-duration').innerText = `${hours} Hours Calculation Matrix`;
+
+            const deliveryCost = document.getElementById('del-home').checked ? 50 : 0;
+            const baseCost = hours * car.rate;
+            const totalEstimated = baseCost > 0 ? (baseCost + deliveryCost) : 0;
+
+            document.getElementById('book-calc-total').innerText = `₹${totalEstimated}`;
+        }
+
+        /*************************************************************************
+         * PAGE 4 & 5: CHECKOUT FLOW PIPELINE VERIFICATION ARCHITECTURE
+         *************************************************************************/
+        function proceedToConfirmation() {
+            if (!APP_STATE.isLoggedIn) {
+                alert('Authentication required! Redirecting to credentials clearing portal.');
+                showPage('login-page');
+                return;
+            }
+
+            const car = APP_STATE.carsDatabase.find(c => c.id === APP_STATE.currentSelectedCarId);
+            const pickupVal = document.getElementById('book-input-pickup').value;
+            const dropVal = document.getElementById('book-input-drop').value;
+            const hours = calculateCalculatedTotalHours(pickupVal, dropVal);
+
+            if (hours <= 0) {
+                alert('Invalid operational deployment timeline range! Re-check dates.');
+                return;
+            }
+
+            // Sync structural confirmation input elements
+            document.getElementById('conf-read-pickup').value = pickupVal.replace('T', ' ');
+            document.getElementById('conf-read-drop').value = dropVal.replace('T', ' ');
+            
+            const isHome = document.getElementById('del-home').checked;
+            document.getElementById('conf-read-delivery').value = isHome ? "Premium Logistics Home Delivery (+₹50)" : "Self Pick-Up at Hub Terminal Desk";
+            
+            document.getElementById('conf-edit-pickup-loc').value = document.getElementById('book-pickup-loc').value;
+            document.getElementById('conf-edit-drop-loc').value = document.getElementById('book-drop-loc').value;
+
+            document.getElementById('conf-summary-carname').innerText = car.name;
+            document.getElementById('conf-summary-carrating').innerText = `★ ${car.rating}`;
+            document.getElementById('conf-summary-duration').innerText = `${hours} Hours Total`;
+
+            // Reset coupon state clean
+            APP_STATE.activeCouponApplied = false;
+            APP_STATE.activeCouponDiscountValue = 0;
+            document.getElementById('coupon-input-field').value = '';
+            document.getElementById('coupon-alert-success').classList.add('d-none');
+            document.getElementById('coupon-alert-error').classList.add('d-none');
+            document.getElementById('conf-breakdown-discount-row').classList.add('d-none');
+
+            updateCalculatedConfirmationPriceSummaryCards();
+            showPage('confirmation-page');
+        }
+
+        function updateCalculatedConfirmationPriceSummaryCards() {
+            const car = APP_STATE.carsDatabase.find(c => c.id === APP_STATE.currentSelectedCarId);
+            const hours = calculateCalculatedTotalHours(document.getElementById('book-input-pickup').value, document.getElementById('book-input-drop').value);
+            
+            const baseCost = hours * car.rate;
+            const deliveryCost = document.getElementById('del-home').checked ? 50 : 0;
+            const finalTotalValue = baseCost + deliveryCost - APP_STATE.activeCouponDiscountValue;
+
+            document.getElementById('conf-breakdown-base').innerText = `₹${baseCost}`;
+            document.getElementById('conf-breakdown-delivery').innerText = `+₹${deliveryCost}`;
+            document.getElementById('conf-breakdown-discount').innerText = `&minus;₹${APP_STATE.activeCouponDiscountValue}`;
+            document.getElementById('conf-breakdown-total').innerText = `₹${finalTotalValue}`;
+        }
+
+        function applyDiscountToken() {
+            const tokenValue = document.getElementById('coupon-input-field').value.trim();
+            
+            if (tokenValue === 'SAVE20') {
+                APP_STATE.activeCouponApplied = true;
+                APP_STATE.activeCouponDiscountValue = 250;
+                document.getElementById('coupon-alert-success').classList.remove('d-none');
+                document.getElementById('coupon-alert-error').classList.add('d-none');
+                document.getElementById('conf-breakdown-discount-row').classList.remove('d-none');
+            } else {
+                APP_STATE.activeCouponApplied = false;
+                APP_STATE.activeCouponDiscountValue = 0;
+                document.getElementById('coupon-alert-success').classList.add('d-none');
+                document.getElementById('coupon-alert-error').classList.remove('d-none');
+                document.getElementById('conf-breakdown-discount-row').classList.add('d-none');
+            }
+            updateCalculatedConfirmationPriceSummaryCards();
+        }
+
+        function proceedToPayment() {
+            const car = APP_STATE.carsDatabase.find(c => c.id === APP_STATE.currentSelectedCarId);
+            const hours = calculateCalculatedTotalHours(document.getElementById('book-input-pickup').value, document.getElementById('book-input-drop').value);
+            
+            const baseCost = hours * car.rate;
+            const deliveryCost = document.getElementById('del-home').checked ? 50 : 0;
+            const finalTotalValue = baseCost + deliveryCost - APP_STATE.activeCouponDiscountValue;
+
+            // Load summary metadata parameters inside clearing screen safely
+            document.getElementById('pay-summary-carname').innerText = car.name;
+            document.getElementById('pay-summary-cartags').innerText = `${car.fuel} Technology &bull; ${car.seats} Physical Seats`;
+            document.getElementById('pay-summary-base').innerText = `₹${baseCost}`;
+            document.getElementById('pay-summary-delivery').innerText = `+₹${deliveryCost}`;
+            
+            if (APP_STATE.activeCouponApplied) {
+                document.getElementById('pay-summary-discount-row').classList.remove('d-none');
+                document.getElementById('pay-summary-discount').innerText = `&minus;₹${APP_STATE.activeCouponDiscountValue}`;
+            } else {
+                document.getElementById('pay-summary-discount-row').classList.add('d-none');
+            }
+
+            document.getElementById('pay-summary-total').innerText = `₹${finalTotalValue}`;
+            document.getElementById('pay-submit-btn-text').innerText = `Secure Pay ₹${finalTotalValue}`;
+
+            // Reset payment forms layout views
+            document.getElementById('pay-opt-card').checked = true;
+            togglePaymentGatewayForms();
+            showPage('payment-page');
+        }
+
+        function togglePaymentGatewayForms() {
+            const method = document.querySelector('input[name="payment-method-options"]:checked').value;
+            
+            // Containers arrays references loops maps variables
+            document.getElementById('form-container-card').classList.add('d-none');
+            document.getElementById('form-container-upi').classList.add('d-none');
+            document.getElementById('form-container-net').classList.add('d-none');
+            
+            document.getElementById('pay-select-card-wrapper').className = "card p-3 border mb-3 text-muted";
+            document.getElementById('pay-select-upi-wrapper').className = "card p-3 border mb-3 text-muted";
+            document.getElementById('pay-select-net-wrapper').className = "card p-3 border mb-4 text-muted";
+
+            if (method === 'card') {
+                document.getElementById('form-container-card').classList.remove('d-none');
+                document.getElementById('pay-select-card-wrapper').className = "card p-3 border-2 mb-3 bg-white text-dark";
+                document.getElementById('pay-select-card-wrapper').style.borderColor = "var(--primary-orange)";
+            } else if (method === 'upi') {
+                document.getElementById('form-container-upi').classList.remove('d-none');
+                document.getElementById('pay-select-upi-wrapper').className = "card p-3 border-2 mb-3 bg-white text-dark";
+                document.getElementById('pay-select-upi-wrapper').style.borderColor = "var(--primary-orange)";
+            } else if (method === 'net') {
+                document.getElementById('form-container-net').classList.remove('d-none');
+                document.getElementById('pay-select-net-wrapper').className = "card p-3 border-2 mb-4 bg-white text-dark";
+                document.getElementById('pay-select-net-wrapper').style.borderColor = "var(--primary-orange)";
+            }
+        }
+
+        function executeSecurePaymentWorkflow() {
+            const method = document.querySelector('input[name="payment-method-options"]:checked').value;
+            
+            // Basic required validation assertions checks
+            if (method === 'card') {
+                if (!document.getElementById('pay-card-num').value || !document.getElementById('pay-card-name').value) {
+                    alert('Please fulfill mandatory secure credit clearing infrastructure form blocks.');
+                    return;
+                }
+            } else if (method === 'upi') {
+                if (!document.getElementById('pay-upi-id').value) {
+                    alert('Please specify your operational target Virtual Payment Address token.');
+                    return;
+                }
+            } else if (method === 'net') {
+                if (!document.getElementById('pay-net-bank').value) {
+                    alert('Please pick an institutional account management partner banking group.');
+                    return;
+                }
+            }
+
+            const car = APP_STATE.carsDatabase.find(c => c.id === APP_STATE.currentSelectedCarId);
+            const hours = calculateCalculatedTotalHours(document.getElementById('book-input-pickup').value, document.getElementById('book-input-drop').value);
+            const baseCost = hours * car.rate;
+            const deliveryCost = document.getElementById('del-home').checked ? 50 : 0;
+            const finalPrice = baseCost + deliveryCost - APP_STATE.activeCouponDiscountValue;
+
+            // Generate localized tracking entry inside records arrays database
+            const uniqueRandomID = `RR-2026-00${Math.floor(1000 + Math.random() * 9000)}`;
+            const pickupString = document.getElementById('book-input-pickup').value.replace('T', ' ');
+            const dropString = document.getElementById('book-input-drop').value.replace('T', ' ');
+
+            const incomingRecord = {
+                id: uniqueRandomID,
+                carName: car.name,
+                pickup: pickupString,
+                drop: dropString,
+                location: APP_STATE.searchFilters.location,
+                delivery: deliveryCost > 0 ? 'Home Delivery' : 'Self Pick-Up',
+                total: finalPrice,
+                status: 'Confirmed'
+            };
+
+            // Unshift tracking element lists
+            APP_STATE.userActiveBookings.unshift(incomingRecord);
+
+            // Populating localized success parameters cards nodes
+            document.getElementById('success-read-id').innerText = uniqueRandomID;
+            document.getElementById('success-carname').innerText = `${car.name} ${car.year}`;
+            document.getElementById('success-dates').innerText = `${pickupString} \u2192 ${dropString}`;
+            document.getElementById('success-location').innerText = document.getElementById('conf-edit-pickup-loc').value;
+            document.getElementById('success-badge-total').innerText = `Paid ₹${finalPrice}`;
+
+            // Trigger structural decorative keyframe elements loops animations
+            triggerConfettiVisualAnimationsEngine();
+            showPage('success-page');
+        }
+
+        function triggerConfettiVisualAnimationsEngine() {
+            const frame = document.getElementById('confetti-holder-div');
+            if (!frame) return;
+            frame.innerHTML = '';
+            
+            for (let index = 0; index < 45; index++) {
+                const particle = document.createElement('div');
+                particle.className = 'confetti';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.backgroundColor = index % 3 === 0 ? 'var(--primary-orange)' : (index % 3 === 1 ? 'var(--dark-navy)' : 'var(--success-green)');
+                particle.style.animationDelay = `${Math.random() * 2.5}s`;
+                particle.style.animationDuration = `${1.5 + Math.random() * 2}s`;
+                frame.appendChild(particle);
+            }
+        }
+
+        /*************************************************************************
+         * PAGE 7 & 8: AUTHENTICATION FLOWS CONTROLLERS UTILITIES
+         *************************************************************************/
+        function togglePasswordInputEyeVisibility(fieldId) {
+            const element = document.getElementById(fieldId);
+            if (element) {
+                element.type = element.type === 'password' ? 'text' : 'password';
+            }
+        }
+
+        function handleSecurePasswordResetTrigger() {
+            const inputVal = document.getElementById('forgot-pass-email-field').value;
+            if (inputVal) {
+                alert(`A secure password recovery credentials clearance linkage has been successfully dispatched to protective inbox: ${inputVal}`);
+                document.getElementById('close-forgot-pass-modal-x').click();
+            }
+        }
+
+        function simulateSuccessLoginState() {
+            APP_STATE.isLoggedIn = true;
+            updateGlobalNavbarStateElements();
+            showPage('home-page');
+        }
+
+        function logoutUserSessionSequence() {
+            APP_STATE.isLoggedIn = false;
+            updateGlobalNavbarStateElements();
+            showPage('home-page');
+        }
+
+        function updateGlobalNavbarStateElements() {
+            const wrapper = document.getElementById('nav-auth-area');
+            if (!wrapper) return;
+
+            if (APP_STATE.isLoggedIn) {
+                wrapper.innerHTML = `
+                    <div class="dropdown">
+                        <button class="btn btn-orange dropdown-toggle rounded-pill px-4 fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-user-shield me-2"></i>kumar_prajwal
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 bg-white">
+                            <li><a class="dropdown-item py-2 fw-medium" href="#" onclick="showPage('profile-page'); toggleActiveProfileTabs('info');"><i class="fa-solid fa-id-card text-muted me-2"></i>My Profile</a></li>
+                            <li><a class="dropdown-item py-2 fw-medium" href="#" onclick="showPage('profile-page'); toggleActiveProfileTabs('bookings');"><i class="fa-solid fa-clock-history text-muted me-2"></i>My Bookings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2 fw-medium text-danger" href="#" onclick="logoutUserSessionSequence()"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                wrapper.innerHTML = `
+                    <button class="btn btn-outline-orange px-4 rounded-pill fw-bold" onclick="showPage('login-page')">Login</button>
+                `;
+            }
+        }
+
+        function calculatePasswordMetricsStrength() {
+            const text = document.getElementById('reg-pass').value;
+            const bar = document.getElementById('reg-strength-indicator');
+            const label = document.getElementById('reg-strength-label');
+
+            if (!text) {
+                bar.style.width = '0%';
+                label.innerText = 'Password security meter: Empty';
+                return;
+            }
+
+            let weightScore = 0;
+            if (text.length >= 6) weightScore++;
+            if (/[A-Z]/.test(text)) weightScore++;
+            if (/[0-9]/.test(text)) weightScore++;
+
+            if (weightScore <= 1) {
+                bar.style.width = '33%';
+                bar.className = 'progress-bar strength-bar bg-danger';
+                label.innerText = 'Strength Index assessment: WEAK CONFIGURATION';
+            } else if (weightScore === 2) {
+                bar.style.width = '66%';
+                bar.className = 'progress-bar strength-bar bg-warning';
+                label.innerText = 'Strength Index assessment: FAIR STATUS';
+            } else {
+                bar.style.width = '100%';
+                bar.className = 'progress-bar strength-bar bg-success';
+                label.innerText = 'Strength Index assessment: STRONG CRYPTO SHELL';
+            }
+        }
+
+        function verifyPasswordMatchStateIndicators() {
+            const original = document.getElementById('reg-pass').value;
+            const replication = document.getElementById('reg-pass-confirm').value;
+            const visualNode = document.getElementById('reg-match-status-icon');
+
+            if (!replication) {
+                visualNode.innerHTML = `<i class="fa-solid fa-minus text-muted"></i>`;
+                return;
+            }
+
+            if (original === replication) {
+                visualNode.innerHTML = `<i class="fa-solid fa-circle-check text-success"></i>`;
+            } else {
+                visualNode.innerHTML = `<i class="fa-solid fa-circle-xmark text-danger"></i>`;
+            }
+        }
+
+        function triggerProfileRegistrationValidation() {
+            const pass = document.getElementById('reg-pass').value;
+            const conf = document.getElementById('reg-pass-confirm').value;
+
+            if (pass !== conf) {
+                alert('Password replication mismatch parameters error! Align validation inputs.');
+                return;
+            }
+
+            alert('Account security record created successfully! Access granted automatically.');
+            APP_STATE.isLoggedIn = true;
+            updateGlobalNavbarStateElements();
+            showPage('home-page');
+        }
+
+        /*************************************************************************
+         * PAGE 9: SECURE ACCOUNT USER MANAGEMENT CONTROL TAB SYSTEMS
+         *************************************************************************/
+        function toggleActiveProfileTabs(tabToken) {
+            document.querySelectorAll('.profile-tab-block').forEach(b => b.classList.add('d-none'));
+            document.querySelectorAll('.profile-nav .nav-link').forEach(l => l.classList.remove('active'));
+
+            const targetBlock = document.getElementById(`tab-content-${tabToken}`);
+            const targetLink = document.getElementById(`prof-link-${tabToken}`);
+            
+            if (targetBlock && targetLink) {
+                targetBlock.classList.remove('d-none');
+                targetLink.classList.add('active');
+            }
+        }
+
+        function showProfileTab(tabToken) {
+            showPage('profile-page');
+            toggleActiveProfileTabs(tabToken);
+        }
+
+        function toggleProfileFormEditMode(forceResetCancelState = false) {
+            const inputElements = document.querySelectorAll('.profile-input-field');
+            const buttonPanelRow = document.getElementById('profile-save-actions-row');
+            const masterToggleBtn = document.getElementById('profile-edit-toggle-btn');
+
+            const evaluationState = inputElements[0].hasAttribute('readonly');
+
+            if (evaluationState && !forceResetCancelState) {
+                // Enter active write edit mode parameters setup
+                inputElements.forEach(item => {
+                    if (item.tagName !== 'SELECT') item.removeAttribute('readonly');
+                    if (item.tagName === 'SELECT') item.removeAttribute('disabled');
+                });
+                buttonPanelRow.classList.remove('d-none');
+                masterToggleBtn.classList.add('d-none');
+            } else {
+                // Relock controls context read-only modes safely
+                inputElements.forEach(item => {
+                    if (item.tagName !== 'SELECT') item.setAttribute('readonly', 'true');
+                    if (item.tagName === 'SELECT') item.setAttribute('disabled', 'true');
+                });
+                buttonPanelRow.classList.add('d-none');
+                masterToggleBtn.classList.remove('d-none');
+
+                if (forceResetCancelState) {
+                    // Reset fields back to original values safely
+                    document.getElementById('prof-val-fname').value = "KUMAR";
+                    document.getElementById('prof-val-lname').value = "PRAJWAL";
+                    document.getElementById('prof-val-email').value = "kumar@gmail.com";
+                    document.getElementById('prof-val-phone').value = "+91 9876543210";
+                    document.getElementById('prof-val-gender').value = "Male";
+                }
+            }
+        }
+
+        function saveProfileChangesFormMode() {
+            alert('Dynamic core user updates committed successfully onto decentralized server clusters.');
+            toggleProfileFormEditMode(false);
+        }
+
+        function renderUserBookingsListStack() {
+            const node = document.getElementById('bookings-dynamic-stack-container');
+            if (!node) return;
+
+            if (APP_STATE.userActiveBookings.length === 0) {
+                node.innerHTML = `<p class="text-muted bg-white p-4 rounded text-center border shadow-sm">No historical trip logs compiled within database files records.</p>`;
+                return;
+            }
+
+            node.innerHTML = '';
+            APP_STATE.userActiveBookings.forEach((order, index) => {
+                let badgeClass = "bg-success";
+                if (order.status === 'Cancelled') badgeClass = "bg-danger";
+                
+                const cardBlock = document.createElement('div');
+                cardBlock.className = 'card p-3 border-0 shadow-sm bg-white mb-3 rounded-4';
+                cardBlock.innerHTML = `
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-2 col-sm-3 text-center">
+                            <div style="background-color: #cbd5e1; height: 75px; border-radius: 8px;" class="d-flex align-items-center justify-content-center text-muted"><i class="fa-solid fa-car fa-2x"></i></div>
+                        </div>
+                        <div class="col-md-7 col-sm-6">
+                            <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                                <h5 class="fw-bold text-dark mb-0">${order.carName}</h5>
+                                <span class="badge ${badgeClass} text-uppercase small">${order.status}</span>
+                            </div>
+                            <small class="text-muted d-block mb-1"><i class="fa-solid fa-clock me-1"></i> ${order.pickup} &rarr; ${order.drop}</small>
+                            <small class="text-muted d-block"><i class="fa-solid fa-map-location-dot me-1"></i> Hub: ${order.location} &bull; Mode: ${order.delivery}</small>
+                        </div>
+                        <div class="col-md-3 col-sm-3 text-md-end text-start">
+                            <div class="fw-extrabold text-dark fs-5 mb-2">₹${order.total}</div>
+                            <div class="d-flex gap-2 justify-content-md-end">
+                                <button class="btn btn-sm btn-light border" onclick="alert('Order full reference ledger ID: ' + '${order.id}')">Details</button>
+                                ${order.status === 'Confirmed' ? `<button class="btn btn-sm btn-outline-danger" onclick="triggerCancellationRequestProtocol('${order.id}')">Cancel</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                node.appendChild(cardBlock);
+            });
+        }
+
+        function triggerCancellationRequestProtocol(orderId) {
+            APP_STATE.temporaryTargetCancellationId = orderId;
+            const modalObj = new bootstrap.Modal(document.getElementById('cancelBookingConfirmModal'));
+            modalObj.show();
+        }
+
+        function executeConfirmedBookingCancellationSequence() {
+            const targetedId = APP_STATE.temporaryTargetCancellationId;
+            const targetRecordIndex = APP_STATE.userActiveBookings.findIndex(o => o.id === targetedId);
+            
+            if (targetRecordIndex !== -1) {
+                APP_STATE.userActiveBookings[targetRecordIndex].status = "Cancelled";
+                renderUserBookingsListStack();
+                alert(`Order booking registration reference context ${targetedId} updated safely to CANCELLED status indexes.`);
+            }
+
+            document.getElementById('close-cancel-booking-modal-x').click();
+        }
+    </script>
+</body>
+</html>
+
+
+
+<div class="row g-4">
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card car-card border-0 h-100 shadow-sm">
+                    <div class="car-img-placeholder d-flex align-items-center justify-content-center position-relative">
+                        <i class="bi bi-car-front car-icon"></i>
+                        <span class="badge badge-rating position-absolute"><i class="bi bi-star-fill me-1"></i>4.8</span>
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <h3 class="card-title fs-5 fw-bold text-dark mb-1">Toyota Innova Crysta</h3>
+                            <p class="text-muted small mb-3">Model Year Matrix: 2023</p>
+                            
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="badge badge-spec text-dark"><i class="bi bi-fuel-pump me-1"></i>Diesel</span>
+                                <span class="badge badge-spec text-dark"><i class="bi bi-person-workspace me-1"></i>7 Seats</span>
+                            </div>
+                            
+                            <p class="text-muted small"><i class="bi bi-geo-alt-fill text-orange me-1"></i>Hub Base: Location Bangalore</p>
+                        </div>
+                        
+                        <hr class="text-muted opacity-25 my-3">
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fs-4 fw-bold text-orange">₹150</span>
+                                <span class="text-muted small"> / hr</span>
+                            </div>
+                            <button type="button" class="btn btn-outline-orange font-semibold px-4">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card car-card border-0 h-100 shadow-sm">
+                    <div class="car-img-placeholder d-flex align-items-center justify-content-center position-relative">
+                        <i class="bi bi-car-front car-icon"></i>
+                        <span class="badge badge-rating position-absolute"><i class="bi bi-star-fill me-1"></i>4.5</span>
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <h3 class="card-title fs-5 fw-bold text-dark mb-1">Honda City i-VTEC</h3>
+                            <p class="text-muted small mb-3">Model Year Matrix: 2022</p>
+                            
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="badge badge-spec text-dark"><i class="bi bi-fuel-pump me-1"></i>Petrol</span>
+                                <span class="badge badge-spec text-dark"><i class="bi bi-person-workspace me-1"></i>5 Seats</span>
+                            </div>
+                            
+                            <p class="text-muted small"><i class="bi bi-geo-alt-fill text-orange me-1"></i>Hub Base: Location Bangalore</p>
+                        </div>
+                        
+                        <hr class="text-muted opacity-25 my-3">
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fs-4 fw-bold text-orange">₹95</span>
+                                <span class="text-muted small"> / hr</span>
+                            </div>
+                            <button type="button" class="btn btn-outline-orange font-semibold px-4">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="card car-card border-0 h-100 shadow-sm">
+                    <div class="car-img-placeholder d-flex align-items-center justify-content-center position-relative">
+                        <i class="bi bi-car-front car-icon"></i>
+                        <span class="badge badge-rating position-absolute"><i class="bi bi-star-fill me-1"></i>4.7</span>
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <h3 class="card-title fs-5 fw-bold text-dark mb-1">Mahindra Thar 4×4</h3>
+                            <p class="text-muted small mb-3">Model Year Matrix: 2023</p>
+                            
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="badge badge-spec text-dark"><i class="bi bi-fuel-pump me-1"></i>Diesel</span>
+                                <span class="badge badge-spec text-dark"><i class="bi bi-person-workspace me-1"></i>4 Seats</span>
+                            </div>
+                            
+                            <p class="text-muted small"><i class="bi bi-geo-alt-fill text-orange me-1"></i>Hub Base: Location Bangalore</p>
+                        </div>
+                        
+                        <hr class="text-muted opacity-25 my-3">
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fs-4 fw-bold text-orange">₹180</span>
+                                <span class="text-muted small"> / hr</span>
+                            </div>
+                            <button type="button" class="btn btn-outline-orange font-semibold px-4">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>

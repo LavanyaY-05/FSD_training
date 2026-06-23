@@ -1,0 +1,106 @@
+
+
+
+
+:root {
+    --brand-orange: #ff8c00;
+    --brand-orange-hover: #e07b00;
+    --rating-green: #2ecc71;
+    --bg-gray-light: #eef2f5;
+}
+
+body {
+    background-color: var(--bg-gray-light) !important;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.container-custom {
+    max-width: 1300px;
+}
+
+/* Custom Buttons */
+.btn-orange {
+    background-color: var(--brand-orange);
+    border-color: var(--brand-orange);
+}
+.btn-orange:hover {
+    background-color: var(--brand-orange-hover);
+    border-color: var(--brand-orange-hover);
+}
+
+.btn-outline-orange {
+    color: var(--brand-orange);
+    border-color: var(--brand-orange);
+    background-color: transparent;
+    transition: all 0.2s ease-in-out;
+}
+.btn-outline-orange:hover {
+    background-color: var(--brand-orange);
+    color: #fff;
+    border-color: var(--brand-orange);
+}
+
+.text-orange {
+    color: var(--brand-orange);
+}
+
+/* Form Search Bar customization */
+form.search-bar {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: block; /* Ensures form layout takes full-width block behaviors */
+}
+.search-bar .form-select, 
+.search-bar .form-control {
+    background-color: #fcfcfc;
+    border: 1px solid #dee2e6;
+    padding: 0.6rem 0.75rem;
+}
+.search-bar .input-group-text {
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+}
+
+/* Car Listing Cards */
+.car-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+.car-card:hover {
+    transform: translateY(-4px);
+}
+
+.car-img-placeholder {
+    background-color: #e9ecef;
+    height: 200px;
+}
+.car-icon {
+    font-size: 5rem;
+    color: #6c757d;
+}
+
+.badge-rating {
+    background-color: var(--rating-green);
+    color: #fff;
+    top: 15px;
+    right: 15px;
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.badge-spec {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    font-weight: 500;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+.badge-spec i {
+    color: #6c757d;
+}
